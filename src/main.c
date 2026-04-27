@@ -7,10 +7,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+const int BYTES_PER_LINE = 16;
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         printf("Usage: ./xdump <file_name>");
-        return EXIT_SUCCESS;
+        return EXIT_FAILURE;
     }
 
     char *file_name = argv[1];
@@ -23,13 +25,28 @@ int main(int argc, char* argv[]) {
 
     int file_char = fgetc(file_ptr);
     long offset = 0;
+    int bytes_printed = 0;
 
     while (file_char != EOF) {
         unsigned char byte = (unsigned char) file_char;
-        
-        printf("%08lx: %02x\n", offset, byte);
+
+        if (bytes_printed % BYTES_PER_LINE == 0) {
+            printf("%08lx: ", offset);
+        }
+
+        printf("%02x ", byte);
+        bytes_printed++;
+
+        if (bytes_printed % BYTES_PER_LINE == 0) {
+            printf("\n");
+        }
+
         file_char = fgetc(file_ptr);
         offset++;
+    }
+
+    if (bytes_printed % BYTES_PER_LINE > 0) {
+        printf("\n");
     }
 
     fclose(file_ptr);
