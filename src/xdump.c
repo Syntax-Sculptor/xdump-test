@@ -16,7 +16,7 @@ int isPrintableChar(char c) {
 }
 
 void printAsciiBuffer(unsigned char buff[], int n) {
-    printf("| ");
+    printf("|");
     for (int i = 0; i < n; i++) {
         if (isPrintableChar(buff[i])) {
             putc(buff[i], stdout);
@@ -26,7 +26,7 @@ void printAsciiBuffer(unsigned char buff[], int n) {
         }
     }
     
-    printf(" |\n");
+    printf("|\n");
 }
 
 void dumpFile(const char* file_name) {
