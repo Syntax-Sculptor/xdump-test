@@ -22,11 +22,14 @@ int main(int argc, char* argv[]) {
     }
 
     int file_char = fgetc(file_ptr);
+    long offset = 0;
 
     while (file_char != EOF) {
         unsigned char byte = (unsigned char) file_char;
-        printf("%02x\n", byte);
+        
+        printf("%08lx: %02x\n", offset, byte);
         file_char = fgetc(file_ptr);
+        offset++;
     }
 
     fclose(file_ptr);
