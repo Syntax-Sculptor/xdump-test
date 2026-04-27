@@ -7,21 +7,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define BUFFER_SIZE 100
-
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         printf("Usage: ./xdump <file_name>");
         return EXIT_SUCCESS;
     }
 
-    char buffer[BUFFER_SIZE];
-
     char *file_name = argv[1];
-    FILE *file_ptr = fopen(file_name, "r");
+    FILE *file_ptr = fopen(file_name, "rb");
 
-    while (fgets(buffer, BUFFER_SIZE, file_ptr)) {
-        printf("%s", buffer);
+    if (file_ptr == NULL) {
+        perror("Failed to open file");
+        return EXIT_FAILURE;
+    }
+
+    int file_char = fgetc(file_ptr);
+
+    while (file_char != EOF) {
+        unsigned char byte = (unsigned char) file_char;
+        printf("%02x\n", byte);
+        file_char = fgetc(file_ptr);
     }
 
     fclose(file_ptr);
