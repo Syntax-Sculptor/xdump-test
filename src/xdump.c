@@ -15,6 +15,12 @@ int isPrintableChar(char c) {
     return c >= 32 && c <= 126;
 }
 
+void printByteBuffer(unsigned char buff[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%02x ", buff[i]);
+    }
+}
+
 void printAsciiBuffer(unsigned char buff[], int n) {
     printf("|");
     for (int i = 0; i < n; i++) {
@@ -49,13 +55,13 @@ void dumpFile(const char* file_name) {
         if (bytes_printed % BYTES_PER_LINE == 0) {
             printf("%08lx: ", offset);
         }
-
-        printf("%02x ", byte);
+        
         bytes_printed++;
 
         ascii_buffer[ascii_buffer_idx] = byte;
 
         if (bytes_printed % BYTES_PER_LINE == 0) {
+            printByteBuffer(ascii_buffer, BYTES_PER_LINE);
             printAsciiBuffer(ascii_buffer, BYTES_PER_LINE);
         }
 
@@ -63,6 +69,7 @@ void dumpFile(const char* file_name) {
         offset++;
     }
 
+    // Print remaining bytes and pad them.
     if (bytes_printed % BYTES_PER_LINE > 0) {
         printAsciiBuffer(ascii_buffer, bytes_printed % BYTES_PER_LINE);
     }
