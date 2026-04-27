@@ -7,7 +7,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-const int BYTES_PER_LINE = 16;
+#define BYTES_PER_LINE 16
+
+int isPrintableChar(char c) {
+    return c >= 32 && c <= 126;
+}
+
+void printAsciiBuffer(char buff[], int n) {
+    printf("| ");
+    for (int i = 0; i < n; i++) {
+        if (isPrintableChar(buff[i])) {
+            putc(buff[i], stdout);
+        }
+        else {
+            printf(".");
+        }
+    }
+    
+    printf(" |\n");
+}
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -26,9 +44,11 @@ int main(int argc, char* argv[]) {
     int file_char = fgetc(file_ptr);
     long offset = 0;
     int bytes_printed = 0;
+    char ascii_buffer[BYTES_PER_LINE];
 
     while (file_char != EOF) {
         unsigned char byte = (unsigned char) file_char;
+        int ascii_buffer_idx = bytes_printed % BYTES_PER_LINE;
 
         if (bytes_printed % BYTES_PER_LINE == 0) {
             printf("%08lx: ", offset);
@@ -37,8 +57,10 @@ int main(int argc, char* argv[]) {
         printf("%02x ", byte);
         bytes_printed++;
 
+        ascii_buffer[ascii_buffer_idx] = byte;
+
         if (bytes_printed % BYTES_PER_LINE == 0) {
-            printf("\n");
+            printAsciiBuffer(ascii_buffer, BYTES_PER_LINE);
         }
 
         file_char = fgetc(file_ptr);
@@ -46,7 +68,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (bytes_printed % BYTES_PER_LINE > 0) {
-        printf("\n");
+        printAsciiBuffer(ascii_buffer, bytes_printed % BYTES_PER_LINE);
     }
 
     fclose(file_ptr);
