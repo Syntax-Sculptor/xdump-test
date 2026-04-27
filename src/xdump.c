@@ -45,22 +45,23 @@ void dumpFile(const char* file_name) {
 
     int file_char = fgetc(file_ptr);
     long offset = 0;
-    int bytes_printed = 0;
+    int current_line_byte = 0;
     unsigned char ascii_buffer[BYTES_PER_LINE];
 
     while (file_char != EOF) {
         unsigned char byte = (unsigned char) file_char;
-        int ascii_buffer_idx = bytes_printed % BYTES_PER_LINE;
+        int ascii_buffer_idx = current_line_byte % BYTES_PER_LINE;
 
-        if (bytes_printed % BYTES_PER_LINE == 0) {
+        if (current_line_byte == 0) {
             printf("%08lx: ", offset);
         }
         
-        bytes_printed++;
+        current_line_byte++;
 
         ascii_buffer[ascii_buffer_idx] = byte;
 
-        if (bytes_printed % BYTES_PER_LINE == 0) {
+        if (current_line_byte == BYTES_PER_LINE) {
+            current_line_byte = 0;
             printByteBuffer(ascii_buffer, BYTES_PER_LINE);
             printAsciiBuffer(ascii_buffer, BYTES_PER_LINE);
         }
@@ -70,8 +71,14 @@ void dumpFile(const char* file_name) {
     }
 
     // Print remaining bytes and pad them.
-    if (bytes_printed % BYTES_PER_LINE > 0) {
-        printAsciiBuffer(ascii_buffer, bytes_printed % BYTES_PER_LINE);
+    if (current_line_byte > 0) {
+        printByteBuffer(ascii_buffer, current_line_byte);
+
+        for (int i = 0; i < BYTES_PER_LINE - current_line_byte; i++) {
+            printf("   ");
+        }
+
+        printAsciiBuffer(ascii_buffer, current_line_byte);
     }
 
     fclose(file_ptr);
